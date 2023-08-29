@@ -94,6 +94,31 @@ class Launch:
                         cv2.imwrite(filename, frameFace)
                     cv2.imshow("Age Gender Demo", frameFace)
             print("time : {:.3f}".format(time.time() - t))
+
+    def torchInference(self):
+        cap = cv2.VideoCapture(self.args.input if self.args.input else 0)
+        padding = 30
+        while cv2.waitKey(1) < 0:
+            t = time.time()
+            hasFrame, frame = cap.read()
+            if not hasFrame:
+                cv2.waitKey()
+                break
+            frameFace, bboxes = self.getFaceBox(self.faceNet, frame)
+            if not bboxes:
+                print("No face Detected, Checking next frame")
+                cv2.putText(frameFace, "No face detected!", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2,
+                            cv2.LINE_AA)
+                cv2.imshow("Age Gender Demo", frameFace)
+            else:
+                for bbox in bboxes:
+                    face = frame[max(0, bbox[1] - padding):min(bbox[3] + padding, frame.shape[0] - 1),
+                                 max(0, bbox[0] - padding):min(bbox[2] + padding, frame.shape[1] - 1)]
+                    blob = cv2.dnn.blobFromImage(
+                        face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
+                    cv2.imshow("Face blob", frameFace)
+                    break
+            print("time : {:.3f}".format(time.time() - t))
         cv2.destroyAllWindows()
 
 parser = argparse.ArgumentParser(
