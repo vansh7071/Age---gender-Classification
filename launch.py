@@ -52,6 +52,21 @@ class Launch:
 
         return frameOpencvDnn, bboxes
 
+cap = cv2.VideoCapture(0)
+
+while True:
+
+	ret, frame = cap.read()
+
+	cv2.imshow('WebCam', frame)
+
+	if cv2.waitKey(1) == ord('q'):
+		break
+
+cap.release()
+cv2.destroyAllWindows()
+
+
 parser = argparse.ArgumentParser(
     description='Use this script to run age and gender recognition using OpenCV.')
 parser.add_argument('-i', '--input', type=str,
