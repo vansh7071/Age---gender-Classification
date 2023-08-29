@@ -11,9 +11,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class Launch:
     def __init__(self, args):
         self.args = args
-        self.ageList = ['(0, 4)','(5, 10)','(12,16)','(17, 24)','(25, 32)','(38, 43)','(48, 53)','(60, 100)']
-        #self.ages = ["(0-3)", "(4-7)", "(8-15)", "(16-20)", "(21-25)", "(26-30)",
-          #           "(33-37)", "(38-45)", "(48-53)", "(54-59)", "(60-100)"]
+        self.ageList = ["(0-3)", "(4-7)", "(8-15)", "(16-20)", "(21-25)", "(26-30)", "(32-45)", "(48-59)", "(60-100)"]
+        self.ages = ["(0-3)", "(4-7)", "(8-15)", "(16-20)", "(21-25)", "(26-30)", "(32-45)", "(48-59)", "(60-100)"]
         self.genders = ["Male", "Female"]
         faceProto = "models/face/opencv_face_detector.pbtxt"
         faceModel = "models/face/opencv_face_detector_uint8.pb"
