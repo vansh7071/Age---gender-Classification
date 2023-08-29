@@ -51,21 +51,75 @@ class Launch:
                               (0, 255, 0), int(round(frameHeight / 150)), 8)
 
         return frameOpencvDnn, bboxes
+    
+    
+    def caffeInference(self):
+        cap = cv2.VideoCapture(self.args.input if self.args.input else 0)
+        padding = 20
+        while cv2.waitKey(1) < 0:
+            t = time.time()
+            hasFrame, frame = cap.read()
+            if not hasFrame:
+                cv2.waitKey()
+                break
+            frameFace, bboxes = self.getFaceBox(self.faceNet, frame)
+            if not bboxes:
+                print("No face Detected, Checking next frame")
+                cv2.putText(frameFace, "NO FACE DETECTED!", (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
+                            cv2.LINE_AA)
+                cv2.imshow("Age Gender Demo", frameFace)
+            else:
+                for bbox in bboxes:
+                    face = frame[max(0, bbox[1] - padding):min(bbox[3] + padding, frame.shape[0] - 1),
+                                 max(0, bbox[0] - padding):min(bbox[2] + padding, frame.shape[1] - 1)]
+                    blob = cv2.dnn.blobFromImage(
+                        face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
+                    self.genderNet.setInput(
+                        blob)
+                    genderPreds = self.genderNet.forward()
+                    gender = self.genders[genderPreds[0].argmax()]
+                    print("Gender : {}, conf = {:.3f}".format(
+                        gender, genderPreds[0].max()))
+                    self.ageNet.setInput(blob)
+                    agePreds = self.ageNet.forward()
+                    age = self.ageList[agePreds[0].argmax()]
+                    print("Age : {}, conf = {:.3f}".format(
+                        age, agePreds[0].max()))
+                    label = "{},{}".format(gender, age)
+                    cv2.putText(frameFace, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255),
+                                2,
+                                cv2.LINE_AA)
+                    if self.args.output != "":
+                        filename = "output/predictions/" + str(args.output)
+                        cv2.imwrite(filename, frameFace)
+                    cv2.imshow("Age Gender Demo", frameFace)
+            print("time : {:.3f}".format(time.time() - t))
 
-cap = cv2.VideoCapture(0)
-
-while True:
-
-	ret, frame = cap.read()
-
-	cv2.imshow('WebCam', frame)
-
-	if cv2.waitKey(1) == ord('q'):
-		break
-
-cap.release()
-cv2.destroyAllWindows()
-
+    def torchInference(self):
+        cap = cv2.VideoCapture(self.args.input if self.args.input else 0)
+        padding = 30
+        while cv2.waitKey(1) < 0:
+            t = time.time()
+            hasFrame, frame = cap.read()
+            if not hasFrame:
+                cv2.waitKey()
+                break
+            frameFace, bboxes = self.getFaceBox(self.faceNet, frame)
+            if not bboxes:
+                print("No face Detected, Checking next frame")
+                cv2.putText(frameFace, "No face detected!", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2,
+                            cv2.LINE_AA)
+                cv2.imshow("Age Gender Demo", frameFace)
+            else:
+                for bbox in bboxes:
+                    face = frame[max(0, bbox[1] - padding):min(bbox[3] + padding, frame.shape[0] - 1),
+                                 max(0, bbox[0] - padding):min(bbox[2] + padding, frame.shape[1] - 1)]
+                    blob = cv2.dnn.blobFromImage(
+                        face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
+                    cv2.imshow("Face blob", frameFace)
+                    break
+            print("time : {:.3f}".format(time.time() - t))
+        cv2.destroyAllWindows()
 
 parser = argparse.ArgumentParser(
     description='Use this script to run age and gender recognition using OpenCV.')
