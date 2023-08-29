@@ -34,10 +34,10 @@ Launch project
 
 ## Screenshots
 
-![Alt text](/results/van.jps?raw=true "Optional Title")
-![Alt text](/results/w.jps?raw=true "Optional Title")
-![Alt text](/results/baby.jps?raw=true "Optional Title")
-![Alt text](/results/old.jps?raw=true "Optional Title")
+![Alt text](/results/van.png?raw=true "Optional Title")
+![Alt text](/results/w.png?raw=true "Optional Title")
+![Alt text](/results/baby.png?raw=true "Optional Title")
+![Alt text](/results/old.png?raw=true "Optional Title")
 
 
 
